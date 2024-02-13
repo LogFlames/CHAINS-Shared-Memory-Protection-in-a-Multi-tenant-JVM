@@ -164,11 +164,11 @@ I will call the seed with 88 classes (excl nested `jdk.internal.ref`) \sigma\_1 
 
 ## 3. Number of classes in the minimal subset
 
-In the article it says they used static code analysis for this algorithm. I tried to find a tool which could do this analysis with java classes but was not able to find a ready tool, so I decided to do the algorithm in runtime with java refelct.
+In the article it says they used static code analysis for this algorithm. I tried to find a tool which could do this analysis with java classes but was not able to find a ready tool, so I decided to do the algorithm in runtime with java reflect.
 
-I ran the experiment in JDK 11.0.12.u7-1 which I was able to install from the archlinux archive. The reason I was not able to run it using all versions to compare was that it didn't find the `jdk.internal.misc.SharedSecrets` class if run from the compressed archive.
+I ran the experiment in JDK 11.0.12.u7-1 which I was able to install from the archlinux archive. The versions downloaded from oracle's archive didn't find the class `jdk.internal.misc.SharedSecrets`.
 
-When it was time to code the expansion algorithm there were some issues. There are many components you can take into consideration. Given that you have a class you can iterate through and add all linked:
+It was then time to code the expansion algorithm, but here I had to do way more guesswork. There are many components you can take into consideration. Given that you have a class you can iterate through and add all linked:
 
 * Fields
 * Methods
@@ -227,9 +227,9 @@ They refer specifically to the signarue of non-private fields and methods which 
 
 Running this code yields 614 classes if we expand from \sigma\_1 and 625 if we expand from \sigma\_2.
 
-I was able to get *closer* to 595 by not iterating through the exceptions, but instead adding a for loop that iterates thorugh the linked interfaces. Then I got 593 from \sigma\_1 and 604 from \sigma\_2, but by adding and removing arbitrary components of the expansion algorithm you can get quite close by chance, and I feel 614 is a more fair representation of my best attempt at recreating the method described in the article.
+I was able to get *closer* to 595 by not iterating through the exceptions, but instead adding a for loop that iterates thorugh the linked interfaces. Then I got 593 from \sigma\_1 and 604 from \sigma\_2, but by adding and removing arbitrary components of the expansion algorithm you can get quite close by chance, and I feel 614 is a more fair representation of my best attempt at recreating the method described in the article. The reason for finding more classes then they did might be becasue I ran it in linux, and so my code might include some linux-specific classes in the minimal subset. It would be very interesting to compare the diff of which classes I found and what classes the authors found.
 
-I tried to add all search-paths I could think of and that were accessible from the reflect API. Except for the ones used in the code above, they were interfaces, constructors and classes. The code then yielded 793 classe from \sigma\_1 and 797 from \sigma\_2. I do not think this is what the authors did, both becasue the do not mention either of these in the article (interfaces, consturctors or classes) unless they count as a "member", but also because the results are way larger (60% larger), and the numbers found previously for the inital seed and total number of classes was within 10% and 1% respectively.
+I also tried to add all search-paths that were accessible from the reflect API. The algorithm then explored the full bullet-list above. It then yielded 793 classe from \sigma\_1 and 797 from \sigma\_2. I do not think this is what the authors did, both becasue the do not mention either of these in the description of the algorithm: interfaces, consturctors or classes, and also because the results are way larger (60% larger than 595), and the numbers found previously for the inital seed and total number of classes was within 10% and 1% of the results from the paper.
 
 I would be happy to explore this further. Especially if you have any tips for tools or ideas to explore.
 
